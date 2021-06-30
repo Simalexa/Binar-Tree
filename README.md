@@ -1,6 +1,6 @@
 # Binar-Tree
 
-Program to create BinarTree with integer alement. Program can:
+Program to create BinarTree with integer element. Program can:
 1. Add node to the tree
 2. Delete tree
 3. Find element in the tree
