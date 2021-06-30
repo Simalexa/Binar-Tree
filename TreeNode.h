@@ -13,16 +13,51 @@ struct TreeNode
 class tree
 {
 	private:
-		int size;
+		int size; // size of tree
+		int nodeToDel; // index of Null element in tree,  which used in deleting node function 
+		void moveNodeUp(TreeNode*& node) // finction to move all elements up when deleteNode is active
+		{
+			if (node->right != NULL)
+			{
+				node->element = node->right->element;
+				moveNodeUp(node->right);
+			}
+			if (node->right == NULL)
+			{
+				nodeToDel = node->number;
+				if (node->left != NULL)
+					node->element = node->left->element;
+				else
+				{
+					node->element = NULL;
+					node->number = size + 1;
+					delete node->left;
+					delete node->right;
+				}
+			}
+		}
+		void rightIndex(TreeNode*& node) // function to find correct index after deleting node
+		{
+			if (node != NULL)
+				if (node->number > nodeToDel)
+				{
+					node->number--;
+				}
+				else
+				{
+					rightIndex(node->left);
+					rightIndex(node->right);
+				}
+		}
 	public:
 		tree()
 		{
-			int size = 0;
+			size = 0;
 		};
 		~tree()
 		{
 		};
-		void delTree(struct TreeNode*& node)
+		void delTree(struct TreeNode*& node) // delete all tree
 		{
 			this->size = 0;
 			if (node != NULL)
@@ -32,61 +67,76 @@ class tree
 				node = NULL;
 			}
 		};
-		void printTree(struct TreeNode*& node)
+		void printTree(struct TreeNode*& node) // print tree
 		{
 			if (this->size == 0)
-				std::cout << std::endl << "Tree is Empty" << std::endl;
-			else if (node != NULL)
+				std::cout << "Tree is Empty" << std::endl;
+			else if (node != NULL && node->number<=size)
 			{
-				std::cout << node->element << " ";
+				if (node->number == 1)
+				{
+					std::cout << "Tree in prefics form: " << std::endl;
+				}
+				std::cout << node->element << " (" << node->number << ") ";
 				printTree(node->left);
 				printTree(node->right);
 			}
+			if(node != NULL && node->number == this-> size - 1)
+				std::cout << std::endl;
 		};
-		void addNode(struct TreeNode*& node, int el)
+		void addNode(struct TreeNode*& node, int el) // add new node
 		{
-			this->size++;
-			std::cout << this->size;
 			if (node == NULL)
 			{
 				node = new TreeNode;
 				node->element = el;
 				node->right = NULL;
 				node->left = NULL;
-				node->number = 1;
+				this->size++;
+				node->number = size;
 			}
 			if (el < node->element)
 			{
-				node->number++;
 				addNode(node->left, el);
 			}
 			if (el > node->element)
 			{
-				node->number++;
 				addNode(node->right, el);
 			}
 		};
-		void dellNode(TreeNode*& node, int a)
+		int findElement(struct TreeNode *&node, int a) // find node with element head number a
 		{
-			//std::cout << this->size;
-			//	if (a <= size)
-			//	{
-			//		if (node->number == a && a < size)
-			//		{
-			//			node->element = node->right->element;
-			//			std::cout << "Click";
-			//			dellNode(node->right, a);
-			//		}
-			//		if (node->number == a && a == size)
-			//		{
-			//			node->element = NULL;
-			//			node->left = NULL;
-			//			node->right = NULL;
-			//			size--;
-			//		}
-			//	}
-			//	else
-			//		std::cout << "Error" << std::endl;
+			if (node != NULL)
+			{
+				if (node->element == a)
+				{
+					std::cout <<"For element " << a << " number of node is "<< node->number <<std::endl;
+					return node->number;
+				}
+				if(node->element < a)
+				{
+					 return findElement(node->right, a);
+				}
+				if(node->element > a)
+					return findElement(node->left, a);
+			}
+		}
+		void dellNode(TreeNode*& node, int b) // delete node number b
+		{
+			if (node != NULL)
+			{
+				if (node->number == b)
+				{
+					moveNodeUp(node);
+					this->size--;
+				}
+				else
+				{
+					dellNode(node->left, b);
+					dellNode(node->right, b);
+				}
+			}
+			rightIndex(node);
 		};
 };
 

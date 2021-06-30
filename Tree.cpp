@@ -3,20 +3,19 @@
 
 int main()
 {
-	struct TreeNode* n;
+	struct TreeNode* n; //create node
 	n = NULL;
-	tree t;
-    t.addNode(n, 8);
+	tree t; //create tree
+    t.addNode(n, 8); // add Node
 	t.addNode(n, 3);
 	t.addNode(n, 6);
 	t.addNode(n, 1);
 	t.addNode(n, 10);
 	t.addNode(n, 14);
 	t.addNode(n, 5);
-    t.printTree(n);
-	t.dellNode(n, 5);
+    t.printTree(n); // print Tree
+	int NodeNumber = t.findElement(n, 8); // find element in the tree
+	t.dellNode(n, NodeNumber); // delete node with element 8
 	t.printTree(n);
-	//t.delTree(n);
-	//t.printTree(n);
     return 0;
 }
