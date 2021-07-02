@@ -34,7 +34,10 @@ class tree
 			if (node->right == NULL)
 			{
 				if (node->left != NULL)
+				{
 					node->element = node->left->element;
+					moveNodeUp(node->left);
+				}
 				else
 				{
 					nodeToDel = node->number;
@@ -128,6 +131,37 @@ class tree
 				findLevel(node->left, inL + 1);
 			}
 		};
+		void delLastNode(struct TreeNode*& node)
+		{
+			if (node != NULL)
+			{
+				if (node->number == size + 2)
+				{
+					delete node->left;
+					delete node->right;
+					delete node;
+					node = NULL;
+				}
+				else
+				{
+					delLastNode(node->left);
+					delLastNode(node->right);
+				}
+			}
+		};
+		void dellNode(TreeNode*& node, int b) // delete node number b
+		{
+			if (node != NULL)
+			{
+				if (node->number == b)
+				{
+					moveNodeUp(node);
+					size--;
+				}
+				dellNode(node->left, b);
+				dellNode(node->right, b);
+			}
+		};
 	public:
 		tree()
 		{
@@ -160,9 +194,7 @@ class tree
 				vec[k] = NULL;
 			}
 			count = 0;
-			std::cout <<std::endl<< maxLevel<< std::endl;
-
-		}
+		};
 		void delTree(struct TreeNode*& node) // delete all tree
 		{
 			this->size = 0;
@@ -181,23 +213,23 @@ class tree
 			{
 				if (node->number == 1)
 				{
-					std::cout << "Tree in prefics form: " << std::endl;
+					std::cout << std::endl << "Tree in prefics form: " << std::endl;
 					findLevel(node, 1);
 				}
 				std::cout << node->element << " (" << node->number << ") ";
 				printTree(node->left);
 				printTree(node->right);
 			}
-			if(node != NULL && node->number == size - 1)
+			if(node != NULL && node->number == size + 1)
 				std::cout << std::endl;
 		};
 		void printBeautifullTree(struct TreeNode *&node) //print tree in TREE form =)
 		{
 			if (node->number == 1)
 			{
-				std::cout << std::endl << " Beautifull tree: "<<std::endl;
+				std::cout << std::endl << "Beautifull tree: "<<std::endl;
 				findLevel(node, 1);
-				//checkMaxLevel(node);
+				checkMaxLevel(node);
 				createNULLelements(node); //create NULL elements in the tree
 			}
 			for (int i = 1; i <= maxLevel; i++)
@@ -247,7 +279,6 @@ class tree
 			{
 				if (node->element == a)
 				{
-					std::cout << "For element " << a << " number of node is " << node->number << std::endl;
 					return node->number;
 				}
 				if (node->element < a)
@@ -258,42 +289,11 @@ class tree
 					return findElement(node->left, a);
 			}
 		};
-		void dellNode(TreeNode*& node, int b) // delete node number b
-		{
-			if (node != NULL)
-			{
-				if (node->number == b)
-				{
-					moveNodeUp(node);
-					size--;
-				}
-					dellNode(node->left, b);
-					dellNode(node->right, b);
-			}
-		};
 		void dellAnyNode(struct TreeNode*& node, int b)
 		{
 			dellNode(node, b);
 			rightIndex(node);
 			delLastNode(node);
-		};
-		void delLastNode(struct TreeNode*& node)
-		{
-			if (node != NULL)
-			{
-				if (node->number == size + 2)
-				{
-					delete node->left;
-					delete node->right;
-					delete node;
-					node = NULL;
-				}
-				else
-				{
-					delLastNode(node->left);
-					delLastNode(node->right);
-				}
-			}
 		};
 };
 

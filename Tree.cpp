@@ -20,14 +20,13 @@ int main()
     t.printTree(n); // print Tree in line form
 
 
-	t.dellAnyNode(n, t.findElement(n, 3)); // delete node with element 2
+	t.dellAnyNode(n, t.findElement(n, 19)); // delete node with element 19
 	t.printTree(n);
 
-	t.dellAnyNode(n, t.findElement(n, 10)); // delete node with element 10
-	t.printTree(n);
+	t.dellAnyNode(n, t.findElement(n, 16)); // delete node with element 16
+	t.printBeautifullTree(n);
 
-	//t.dellAnyNode(n, t.findElement(n, 19));
-	//t.printTree(n);
-
+	t.dellAnyNode(n, t.findElement(n, 8)); // delete node with element 16
+	t.printBeautifullTree(n);
     return 0;
 }
