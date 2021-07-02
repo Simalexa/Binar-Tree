@@ -22,9 +22,9 @@ class tree
 		int maxLevel; // maximum level
 		// for creating Beutifull tree
 		//std::string vec;
-		int vec[10];
+		int vec[100];
 		int count;
-		void moveNodeUp(TreeNode*& node) // finction to move all elements up when deleteNode is active
+		void moveNodeUp(TreeNode*& node) // finction to move all elements up when deleting nodes is active
 		{
 			if (node->right != NULL)
 			{
@@ -33,34 +33,76 @@ class tree
 			}
 			if (node->right == NULL)
 			{
-				nodeToDel = node->number;
 				if (node->left != NULL)
 					node->element = node->left->element;
 				else
 				{
+					nodeToDel = node->number;
 					node->element = NULL;
-					node->number = size + 1;
+					node->number = size + 2;
 					delete node->left;
 					delete node->right;
 				}
 			}
-		}
-		void rightIndex(TreeNode*& node) // function to find correct index after deleting node
+		};
+		void createNULLelements(struct TreeNode*& node) //for building BeautifullTree we need to create all nodes which note exist and make theri elements equal NULL
+		{
+			if (node->level <= maxLevel)
+			{
+				if (node->left != NULL)
+					createNULLelements(node->left);
+				if (node->right != NULL)
+					createNULLelements(node->right);
+				if (node->level <= maxLevel && node->left == NULL)
+				{
+					node->left = new TreeNode;
+					node->left->element = NULL;
+					node->left->level = node->level + 1;
+					node->left->left = NULL;
+					node->left->right = NULL;
+					createNULLelements(node->left);
+				}
+				if (node->level <= maxLevel && node->right == NULL)
+				{
+					node->right = new TreeNode;
+					node->right->element = NULL;
+					node->right->level = node->level + 1;
+					node->right->left = NULL;
+					node->right->right = NULL;
+					createNULLelements(node->right);
+				}
+			}
+		};
+		void cutTreeByLevel(struct TreeNode*& node, int lev) //after creating tree with all NULL elements its necessary to destroy all modes with NULL elements from memory. This function do it layer by layer.
 		{
 			if (node != NULL)
-				if (node->number > nodeToDel)
+			{
+				if (node->level == lev)
 				{
-					node->number--;
+					if (node->element == NULL)
+					{
+						delete node->left;
+						delete node->right;
+						node = NULL;
+					}
 				}
 				else
 				{
-					rightIndex(node->left);
-					rightIndex(node->right);
+					cutTreeByLevel(node->left, lev);
+					cutTreeByLevel(node->right, lev);
 				}
-		}
-		void elementInLevel(struct TreeNode*& node, int lev)
+			}
+		};
+		void cutTree(struct TreeNode*& node) // function to destroy all NULL elements from tree. Used in beautiful tree
 		{
-			if (node != NULL && node->number <= size)
+			for (int i = 0; i <= maxLevel; i++)
+			{
+				cutTreeByLevel(node, maxLevel - i + 1);
+			}
+		}
+		void elementInLevel(struct TreeNode*& node, int lev) // find all elements in the current level.
+		{
+			if (node != NULL)
 			{
 				if (node->level == lev)
 				{
@@ -71,7 +113,7 @@ class tree
 				elementInLevel(node->right, lev);
 			}
 		};
-		void findLevel(struct TreeNode*& node, int inL)
+		void findLevel(struct TreeNode*& node, int inL) // find level position of all nodes
 		{
 			if (node != NULL)
 			{
@@ -96,6 +138,31 @@ class tree
 		~tree()
 		{
 		};
+		void rightIndex(TreeNode*& node) // function to find correct index after deleting node
+		{
+			if (node != NULL)
+			{
+				if (node->number > nodeToDel)
+				{
+					node->number--;
+				}
+				rightIndex(node->left);
+				rightIndex(node->right);
+			}
+		};
+		void checkMaxLevel(struct TreeNode*& node)
+		{
+			elementInLevel(node, maxLevel);
+			if (count == 0)
+				maxLevel--;
+			for (int k = 0; k < count; k++)
+			{
+				vec[k] = NULL;
+			}
+			count = 0;
+			std::cout <<std::endl<< maxLevel<< std::endl;
+
+		}
 		void delTree(struct TreeNode*& node) // delete all tree
 		{
 			this->size = 0;
@@ -110,22 +177,29 @@ class tree
 		{
 			if (this->size == 0)
 				std::cout << "Tree is Empty" << std::endl;
-			else if (node != NULL && node->number<=size)
+			if (node != NULL)
 			{
 				if (node->number == 1)
 				{
 					std::cout << "Tree in prefics form: " << std::endl;
 					findLevel(node, 1);
 				}
-				std::cout << node->element << " (" << node->level << ") ";
+				std::cout << node->element << " (" << node->number << ") ";
 				printTree(node->left);
 				printTree(node->right);
 			}
-			if(node != NULL && node->number == this-> size - 1)
+			if(node != NULL && node->number == size - 1)
 				std::cout << std::endl;
 		};
-		void printVec(struct TreeNode*& node)
+		void printBeautifullTree(struct TreeNode *&node) //print tree in TREE form =)
 		{
+			if (node->number == 1)
+			{
+				std::cout << std::endl << " Beautifull tree: "<<std::endl;
+				findLevel(node, 1);
+				//checkMaxLevel(node);
+				createNULLelements(node); //create NULL elements in the tree
+			}
 			for (int i = 1; i <= maxLevel; i++)
 			{
 				elementInLevel(node, i);
@@ -133,16 +207,21 @@ class tree
 				{
 					for (int j = 0; j < pow(2.0, maxLevel - i) - 1; j++)
 						std::cout << " ";
-					std::cout << vec[k];
-					for (int j = 0; j < pow(2.0, maxLevel - i) - 1; j++)
+					if (vec[k] != NULL)
+						std::cout << vec[k];
+					else
+						std::cout << "0";
+					for (int j = 0; j < pow(2.0, maxLevel - i); j++)
 						std::cout << " ";
 					vec[k] = NULL;
 				}
 				count = 0;
 				std::cout << std::endl;
 			}
+			cutTree(node);
 		};
-		void addNode(struct TreeNode*& node, int el) // add new node
+
+		void addNode(struct TreeNode *&node, int el) // add new node
 		{
 			if (node == NULL)
 			{
@@ -162,23 +241,23 @@ class tree
 				addNode(node->right, el);
 			}
 		};
-		int findElement(struct TreeNode *&node, int a) // find node with element head number a
+		int findElement(struct TreeNode*& node, int a) // find node with element head number a
 		{
 			if (node != NULL)
 			{
 				if (node->element == a)
 				{
-					std::cout <<"For element " << a << " number of node is "<< node->number <<std::endl;
+					std::cout << "For element " << a << " number of node is " << node->number << std::endl;
 					return node->number;
 				}
-				if(node->element < a)
+				if (node->element < a)
 				{
-					 return findElement(node->right, a);
+					return findElement(node->right, a);
 				}
-				if(node->element > a)
+				if (node->element > a)
 					return findElement(node->left, a);
 			}
-		}
+		};
 		void dellNode(TreeNode*& node, int b) // delete node number b
 		{
 			if (node != NULL)
@@ -186,15 +265,35 @@ class tree
 				if (node->number == b)
 				{
 					moveNodeUp(node);
-					this->size--;
+					size--;
+				}
+					dellNode(node->left, b);
+					dellNode(node->right, b);
+			}
+		};
+		void dellAnyNode(struct TreeNode*& node, int b)
+		{
+			dellNode(node, b);
+			rightIndex(node);
+			delLastNode(node);
+		};
+		void delLastNode(struct TreeNode*& node)
+		{
+			if (node != NULL)
+			{
+				if (node->number == size + 2)
+				{
+					delete node->left;
+					delete node->right;
+					delete node;
+					node = NULL;
 				}
 				else
 				{
-					dellNode(node->left, b);
-					dellNode(node->right, b);
+					delLastNode(node->left);
+					delLastNode(node->right);
 				}
 			}
-			rightIndex(node);
 		};
 };
 
